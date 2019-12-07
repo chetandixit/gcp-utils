@@ -12,7 +12,7 @@ This code uses application default credentials.
 You need to setup environment variable with correct service account
 export GOOGLE_APPLICATION_CREDENTIALS=FULL_PATH_OF_SRVCE_ACCNT_KEY_JSON_FILE
 """
-# from pprint import pprint
+
 import json
 import argparse
 from googleapiclient import discovery
@@ -54,14 +54,14 @@ def get_instance_list(service, project, zone_list):
             if response.get('items'):
 
                 for instance in response['items']:
-                    # TODO: Change code below toprocesseach`instance` resource:
                     # 'instance' has all attributes, select only of interest
-                    # pprint(instance['name'])
-                    temp_dict = {"creationTimestamp":
-                                    instance['creationTimestamp'],
-                                    "status":
-                                    instance['status'],
-                                    "zone":
+                    # print(instance['name'])
+                    temp_dict = {
+                        "creationTimestamp":
+                            instance['creationTimestamp'],
+                            "status":
+                                instance['status'],
+                                "zone":
                                     each_zone}
                     instance_list[instance['name']] = temp_dict
                     # instance_list.append(temp_dict)
