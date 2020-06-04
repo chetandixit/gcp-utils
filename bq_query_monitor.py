@@ -14,6 +14,7 @@ Author: Chetan Dixit
 from google.cloud import bigquery
 import datetime
 import argparse
+import json
 
 
 def get_data(projectid, hours=24, max_results=500):
@@ -31,26 +32,30 @@ def get_data(projectid, hours=24, max_results=500):
                             all_users=True):
         # get JobStatistics from job
         j = client.get_job(job.job_id)
-        # Look out for Select * in query text
-        if 'SELECT *' in j.query.upper():
-            all_columns_used = True
-        else:
-            all_columns_used = False
-        # Get required attribute from JobStatistics Object and make a dict,
-        # Count the TableReference from attribute query
-        results[job.job_id] = {
-            "job_id": job.job_id,
-            "num_of_tables_referred":
-            str(j.referenced_tables).count("TableReference"),
-            "select_star_used": all_columns_used,
-            "start_time": str(j.started),
-            "total_bytes_billed": j.total_bytes_billed,
-            "cache_hit": j.cache_hit,
-            "total_bytes_processed": j.total_bytes_processed,
-            "execution_time": str(j.ended-j.started),
-            "user_email": j.user_email}
-        # Make a separate dict with query text to analyze problematic queries
-        query_text[job.job_id] = {"job_id": job.job_id, "query_text": j.query}
+        if j.job_type == 'query':
+            # Look out for Select * in query text
+            if 'SELECT *' in j.query.upper():
+                all_columns_used = True
+            else:
+                all_columns_used = False
+            # Get required attribute from JobStatistics Object and make a dict,
+            # Count the TableReference from attribute query
+            results[job.job_id] = {
+                "job_id": job.job_id,
+                "num_of_tables_referred":
+                str(j.referenced_tables).count("TableReference"),
+                "select_star_used": all_columns_used,
+                "start_time": str(j.started),
+                "total_bytes_billed": j.total_bytes_billed,
+                "cache_hit": j.cache_hit,
+                "total_bytes_processed": j.total_bytes_processed,
+                "execution_time": str(j.ended-j.started),
+                "user_email": j.user_email}
+            # Make a separate dict with query text
+            # to analyze problematic queries
+            query_text[job.job_id] = {
+                "job_id": job.job_id,
+                "query_text": j.query}
 
     # print (results)
     # print (query_text)
@@ -60,6 +65,10 @@ def get_data(projectid, hours=24, max_results=500):
     for jobid in results:
         f1.write(str(results[jobid])+"\n")
     f1.close()
+    filenametemp = "temp_"+filename1
+    temp_json = json.dumps(results)
+    ft = open(filenametemp, 'w')
+    ft.write(temp_json)
     # Write Query text alongwith jobid to file
     filename2 = "bq_monitor_query_text_"+str(datetime.date.today())+".json"
     f2 = open(filename2, 'w')
