@@ -19,7 +19,7 @@ import json
 
 def get_data(projectid, hours=24, max_results=500):
     # Default parameters Last 24 Hours, return max 500 query stats
-    # project = projectid # 'xw-winter-bloom-7'  # replace with your project ID
+    # project = projectid #   # replace with your project ID
     client = bigquery.Client(project=projectid)
     mins_ago = (datetime.datetime.utcnow()
                 - datetime.timedelta(minutes=hours*60))
