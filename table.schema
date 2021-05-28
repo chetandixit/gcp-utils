@@ -1,0 +1,14 @@
+insertDatetime,STRING
+tableID,STRING
+projectId,STRING
+datasetId,STRING
+numBytes,INTEGER
+timePartitioning,STRING
+rangePartitioning,STRING
+clustering,STRING
+created,STRING
+expires,STRING
+tableType,STRING
+numRows,INTEGER
+lastModifiedTime,STRING
+location,STRING
